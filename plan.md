@@ -11,6 +11,8 @@ Build a staging-first email system for Bewdley Farm Shop that preserves WooComme
 - Current baseline: list `Customers` populated and tagged cohort established for historical contacts.
 - Completed: ongoing order sync enabled and local end-to-end checkout tests passed (contact upsert + list/tag/status mapping verified).
 - Current phase: Stage 3 external dependencies (Flywheel staging, DNS path confirmation, SES setup).
+- Staging enabled: `bfs.flywheelstaging.com` (WordPress staging URL confirmed).
+- Staging constraint: WooCommerce safe mode currently required for stable staging access; root-cause isolation required before final staging sign-off.
 
 ## Confirmed Assumptions
 
