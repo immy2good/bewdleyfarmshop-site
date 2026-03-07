@@ -9,7 +9,8 @@ Build a staging-first email system for Bewdley Farm Shop that preserves WooComme
 - Completed: custom `bewdley-custom` plugin foundation, sync settings, legacy export tooling, and CRM backfill tooling.
 - Completed: existing FluentCRM contacts backfilled successfully (`645` subscribed contacts processed).
 - Current baseline: list `Customers` populated and tagged cohort established for historical contacts.
-- Next checkpoint: enable ongoing order sync and validate one new order end-to-end (contact upsert + list/tag mapping).
+- Completed: ongoing order sync enabled and local end-to-end checkout tests passed (contact upsert + list/tag/status mapping verified).
+- Current phase: Stage 3 external dependencies (Flywheel staging, DNS path confirmation, SES setup).
 
 ## Confirmed Assumptions
 
