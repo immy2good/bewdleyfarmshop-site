@@ -1,60 +1,124 @@
 # Project overview
 
-This repository is a WordPress site (PHP) root. Key entry points: `index.php`, `wp-config.php`, and `wp-settings.php`.
-Active code lives under `wp-content/` — themes in `wp-content/themes/` and plugins in `wp-content/plugins/`.
+This repository is a WordPress site for Bewdley Farm Shop.
 
-## Big picture architecture
+## Active stack
 
-Traditional single-site WordPress structure. Core WP bootstrap is in `wp-settings.php` and the runtime configuration is in `wp-config.php` (DB constants, `WP_ENVIRONMENT_TYPE`, and `WP_DEBUG`).
+- WordPress 6.9.1
+- PHP 8.2.29
+- Nginx
+- WooCommerce active
+- Bricks Builder active
+- Bricks Child Theme is used for custom theme work
+- Local development via Local
+- Hosting via Flywheel
+- DNS via Fasthosts
+- Editing workflow via VS Code
 
-Theme: `wp-content/themes/bricks/` (commercial Bricks theme). Inspect `bricks/functions.php` and `bricks/includes/` for theme-specific initializers and constants (asset suffixing, admin checks, builder mode helpers).
+## Code ownership rules
 
-Plugins: notable installed plugins include `woocommerce/` (full composer-like autoloader under `src/`), `woocommerce-payments/`, and several custom or site plugins (e.g. `admin-site-enhancements/`, `automaticcss-plugin/`). Plugins may use their own autoloaders or include patterns; check their top-level plugin PHP file for bootstrapping.
+Treat this as a WordPress site where custom development should be limited to code we control.
 
-## Developer workflows & commands
+### Preferred edit locations
 
-This is a PHP project running inside a local environment (DB credentials in `wp-config.php` indicate local:mysql root/root). Use a LocalWP or similar environment to run the site.
+- `wp-content/themes/bricks-child/`
+- `wp-content/plugins/` for custom site plugins created for this project
+- project documentation files such as `AGENTS.md` and `TASKS.md`
 
-Common dev actions (not automated here):
+### Avoid editing
 
-- Start local site via LocalWP (or LAMP/WAMP) and visit site root.
-- Enable debugging by setting `WP_DEBUG` to `true` in `wp-config.php` and optionally `define('SCRIPT_DEBUG', true);` for non-minified assets.
-- For plugin/theme code changes, reload PHP/FPM or restart LocalWP service as required.
+- WordPress core files
+- `wp-content/themes/bricks/` parent theme
+- commercial plugin internals unless explicitly required
+- WooCommerce core plugin files
+- generated/cache/upload files
 
-## Project-specific conventions & patterns
+## Current implementation priorities
 
-Bricks theme sets many BRICKS\_\* constants and uses `BRICKS_ASSETS_SUFFIX` to choose `.min` vs unminified assets. Search for `BRICKS_ASSETS_SUFFIX` when modifying enqueues.
+The current project focus includes:
 
-WooCommerce is included as a plugin and uses namespaced PSR-like autoloading in `wp-content/plugins/woocommerce/src/Autoloader.php` and a DI container (`$GLOBALS['wc_container']`). Prefer obtaining instances via `wc_get_container()` rather than global-singletons when interacting with WC internals.
+- WooCommerce setup
+- Bricks Builder implementation
+- safe customizations through child theme or custom plugin
+- email/newsletter system planning and integration
+- preserving transactional email functionality
+- preparing safe staging-first deployment workflow
 
-Plugins may provide their own `includes/` or `src/` autoloaders; inspect top-level plugin files (e.g. `woocommerce/woocommerce.php`) for load order hooks and initialization sequences.
+## Environment workflow
 
-## Integration points & external deps
+### Local
 
-Database: credentials are in `wp-config.php` (DB_NAME DB_USER DB_PASSWORD DB_HOST). Local setup uses DB_NAME `local` and user `root`.
+Use Local for:
 
-External services: Bricks references `BRICKS_REMOTE_URL` for licensing and remote templates; WooCommerce/Payments may call external payment gateways — be cautious when running code that triggers network calls.
+- code changes
+- child theme updates
+- custom plugin development
+- Bricks layout work
+- safe non-production testing
 
-## How AI agents should make edits
+### Staging
 
-- Focus changes to `wp-content/*` unless explicitly updating core. Avoid editing WordPress core files in repository root.
-- Preserve constants and DB credentials in `wp-config.php`; if changing for CI or test harness, add guarded edits and document them.
-- When adding or modifying PHP files, follow existing naming and namespace patterns (Bricks uses namespaced classes under `Bricks\\...`, WooCommerce uses `Automattic\\WooCommerce\\...`).
-- Prefer small, localized changes with unit-style tests if adding logic. There are no central test runners configured — propose adding tests as a follow-up.
+Use staging before live for:
 
-## Examples to reference
+- WooCommerce validation
+- mail integration testing
+- plugin interaction testing
+- deliverability-related checks
+- final QA
 
-- Enable non-minified Bricks assets: edit `BRICKS_DEBUG` or `SCRIPT_DEBUG` in `wp-content/themes/bricks/functions.php`.
-- Use WooCommerce container: `wc_get_container()->get( 'logger' )` rather than global access.
+### Production
 
-## Files worth checking first
+Do not assume untested changes should go directly live.
 
-- `wp-config.php` — environment flags and DB settings
-- `wp-content/themes/bricks/functions.php` and `wp-content/themes/bricks/includes/` — theme bootstrap patterns
-- `wp-content/plugins/woocommerce/woocommerce.php` and `wp-content/plugins/*/` top-level PHP files — plugin bootstrap/autoloader patterns
+## WooCommerce conventions
 
-## If something's unclear
+- Preserve checkout and order flow
+- Preserve transactional email behavior unless explicitly changing it
+- Prefer WooCommerce hooks and filters over core edits
+- If interacting with WooCommerce internals, prefer public APIs and standard hooks
 
-- Ask for the developer's preferred local run process (LocalWP, Docker, XAMPP) and whether CI or tests will be added. Provide specific file paths or failing stack traces for faster iteration.
+## Bricks conventions
 
-Please review these instructions and tell me any missing workflows or conventions to include.
+- Use Bricks Child Theme for custom PHP/CSS/JS
+- Do not modify the Bricks parent theme directly
+- Respect Bricks template structure
+- Remember that many Bricks layouts and template contents are stored in the database, not only in files
+
+## Database safety
+
+- Avoid destructive database operations
+- Do not bulk-delete customers, orders, subscribers, or content
+- Prefer reversible and minimal changes
+- If data mapping or migration is needed, explain the exact impact first
+
+## AI editing behavior
+
+When making edits:
+
+- prefer small, localized changes
+- explain file targets before major edits
+- use WordPress best practices
+- prefer hooks, filters, and custom plugin code over invasive edits
+- avoid hardcoding secrets or environment-specific credentials
+- do not edit `wp-config.php` unless explicitly required
+
+## Client/business context
+
+This is a local farm shop website. Client-facing outputs should avoid technical jargon unless explicitly requested. Focus on practical business outcomes, clear UX, maintainability, and low-risk implementation.
+
+## Important reference files
+
+Check these first before proposing project-specific changes:
+
+- `AGENTS.md`
+- `TASKS.md`
+- `wp-content/themes/bricks-child/`
+- any custom plugin created for this project
+
+## If something is unclear
+
+Ask concise questions about:
+
+- whether the change belongs in Bricks Child Theme or a custom plugin
+- whether the change affects WooCommerce checkout or email flow
+- whether the change should be tested on staging first
