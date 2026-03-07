@@ -8,8 +8,11 @@
 /wp-content/themes/*
 !/wp-content/themes/bricks-child/
 
+!/wp-content/plugins/
+
 /wp-content/plugins/*
 !/wp-content/plugins/bewdley-custom/
+!/wp-content/plugins/bewdley-custom/**
 
 # Ignore uploads and cache
 /wp-content/uploads/
