@@ -319,6 +319,7 @@ add_action( 'admin_post_bewdley_export_legacy_subscribers', function () {
 				'orderby' => 'date',
 				'order'   => 'DESC',
 				'return'  => 'objects',
+				'type'    => 'shop_order',
 				'status'  => array( 'wc-processing', 'wc-completed', 'wc-on-hold' ),
 			)
 		);
@@ -328,6 +329,10 @@ add_action( 'admin_post_bewdley_export_legacy_subscribers', function () {
 		}
 
 		foreach ( $orders as $order ) {
+			if ( ! is_object( $order ) || ! method_exists( $order, 'get_billing_email' ) ) {
+				continue;
+			}
+
 			$email = strtolower( trim( (string) $order->get_billing_email() ) );
 
 			if ( '' === $email || ! is_email( $email ) ) {
@@ -554,9 +559,10 @@ function bewdley_try_sync_fluentcrm( $payload, $settings ) {
 	}
 
 	try {
-		$subscriber_class::updateOrCreate(
-			array( 'email' => $payload['email'] ),
+		$subscriber_instance = new $subscriber_class();
+		$subscriber_instance->updateOrCreate(
 			array(
+				'email'      => $payload['email'],
 				'first_name' => $payload['first_name'],
 				'last_name'  => $payload['last_name'],
 				'status'     => 'subscribed',
