@@ -221,6 +221,15 @@ Do not assume SES verification can be finalized meaningfully in Local alone.
 - Hosting panel access exists
 - Root domain sending is acceptable unless changed later
 
+### Flywheel SSH Capability (Project Note)
+
+- Potential SSH access string provided by user:
+- `ssh bewdleyfarmshop90+bewdley-farm-shop@ssh.getflywheel.com`
+- Treat this as an environment capability, not a blanket guarantee for every environment.
+- Verify SSH is enabled for the specific target (staging or production) before relying on it.
+- Intended use: non-destructive diagnostics/log inspection and deployment-adjacent checks.
+- Reference: `https://getflywheel.com/wordpress-support/ssh-key-access-and-management/`
+
 Agents must clearly distinguish between:
 
 - tasks requiring WordPress admin access

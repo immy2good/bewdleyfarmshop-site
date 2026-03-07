@@ -177,6 +177,27 @@ Actions:
 - confirm ability to add TXT/CNAME/MX if needed
 - document where records will be added
 
+## Task 3.3 - Validate Flywheel SSH access (if enabled)
+
+Goal:
+Confirm whether SSH can be used for staging diagnostics and deployment support.
+
+Provided connection string:
+
+- `ssh bewdleyfarmshop90+bewdley-farm-shop@ssh.getflywheel.com`
+
+Actions:
+
+- verify SSH is enabled for the target environment (staging first)
+- validate key-based access and shell login success
+- confirm allowed commands and filesystem scope
+- document any SSH restrictions and safe usage boundaries
+
+Output:
+
+- SSH availability status by environment
+- confirmed diagnostic workflows that can use SSH
+
 ---
 
 # Phase 4: AWS / SES setup
