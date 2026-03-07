@@ -39,6 +39,14 @@ add_action( 'admin_menu', function () {
 		'bewdley-legacy-subscriber-export',
 		'bewdley_render_legacy_subscriber_export'
 	);
+
+	add_management_page(
+		__( 'CRM Backfill Tools', 'bewdley-custom' ),
+		__( 'CRM Backfill Tools', 'bewdley-custom' ),
+		'manage_options',
+		'bewdley-crm-backfill-tools',
+		'bewdley_render_crm_backfill_tools'
+	);
 } );
 
 /**
@@ -208,6 +216,79 @@ function bewdley_render_legacy_subscriber_export() {
 }
 
 /**
+ * Render CRM backfill tools page.
+ */
+function bewdley_render_crm_backfill_tools() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	$settings = bewdley_get_settings();
+	$list_raw = isset( $settings['fluentcrm_list_targets'] ) ? (string) $settings['fluentcrm_list_targets'] : '';
+	$tag_raw  = isset( $settings['fluentcrm_tag_targets'] ) ? (string) $settings['fluentcrm_tag_targets'] : '';
+
+	$updated_count = isset( $_GET['updated_count'] ) ? absint( $_GET['updated_count'] ) : null;
+	$error_code    = isset( $_GET['bewdley_error'] ) ? sanitize_text_field( wp_unslash( $_GET['bewdley_error'] ) ) : '';
+	?>
+	<div class="wrap">
+		<h1><?php echo esc_html__( 'CRM Backfill Tools', 'bewdley-custom' ); ?></h1>
+		<p><?php echo esc_html__( 'Run one-time maintenance actions for existing FluentCRM contacts.', 'bewdley-custom' ); ?></p>
+
+		<?php if ( null !== $updated_count ) : ?>
+			<div class="notice notice-success is-dismissible">
+				<p><?php echo esc_html( sprintf( __( 'Backfill complete. Processed %d subscribed contact(s).', 'bewdley-custom' ), $updated_count ) ); ?></p>
+			</div>
+		<?php endif; ?>
+
+		<?php if ( 'missing_tags' === $error_code ) : ?>
+			<div class="notice notice-error is-dismissible">
+				<p><?php echo esc_html__( 'Provide at least one tag target below, or set FluentCRM Tag Targets in Email Sync Settings.', 'bewdley-custom' ); ?></p>
+			</div>
+		<?php endif; ?>
+
+		<?php if ( 'missing_fluentcrm' === $error_code ) : ?>
+			<div class="notice notice-error is-dismissible">
+				<p><?php echo esc_html__( 'FluentCRM classes were not available. Confirm FluentCRM is active and try again.', 'bewdley-custom' ); ?></p>
+			</div>
+		<?php endif; ?>
+
+		<h2><?php echo esc_html__( 'Apply Configured Tags To Existing Contacts', 'bewdley-custom' ); ?></h2>
+		<p><?php echo esc_html__( 'This action applies configured tag targets to subscribed contacts. If list targets are configured, only contacts in those lists are processed.', 'bewdley-custom' ); ?></p>
+
+		<table class="form-table" role="presentation">
+			<tr>
+				<th scope="row"><?php echo esc_html__( 'Current List Targets', 'bewdley-custom' ); ?></th>
+				<td><code><?php echo esc_html( '' !== trim( $list_raw ) ? $list_raw : __( '(none)', 'bewdley-custom' ) ); ?></code></td>
+			</tr>
+			<tr>
+				<th scope="row"><?php echo esc_html__( 'Current Tag Targets', 'bewdley-custom' ); ?></th>
+				<td><code><?php echo esc_html( '' !== trim( $tag_raw ) ? $tag_raw : __( '(none)', 'bewdley-custom' ) ); ?></code></td>
+			</tr>
+		</table>
+
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<?php wp_nonce_field( 'bewdley_backfill_contact_tags' ); ?>
+			<input type="hidden" name="action" value="bewdley_backfill_contact_tags" />
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><?php echo esc_html__( 'Tag Targets For This Run', 'bewdley-custom' ); ?></th>
+					<td>
+						<input class="regular-text" type="text" name="backfill_tag_targets" value="<?php echo esc_attr( $tag_raw ); ?>" />
+						<p class="description"><?php echo esc_html__( 'Comma-separated tag names, slugs, or IDs. Missing tag names will be created for this backfill.', 'bewdley-custom' ); ?></p>
+						<label>
+							<input type="checkbox" name="save_backfill_tag_targets" value="yes" />
+							<?php echo esc_html__( 'Save these values to Email Sync Settings', 'bewdley-custom' ); ?>
+						</label>
+					</td>
+				</tr>
+			</table>
+			<?php submit_button( __( 'Run Tag Backfill', 'bewdley-custom' ), 'primary', 'submit', false ); ?>
+		</form>
+	</div>
+	<?php
+}
+
+/**
  * Export legacy subscribers from WooCommerce orders.
  */
 add_action( 'admin_post_bewdley_export_legacy_subscribers', function () {
@@ -297,6 +378,96 @@ add_action( 'admin_post_bewdley_export_legacy_subscribers', function () {
 	}
 
 	fclose( $output );
+	exit;
+} );
+
+/**
+ * Apply configured FluentCRM tags to existing subscribed contacts.
+ */
+add_action( 'admin_post_bewdley_backfill_contact_tags', function () {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'Insufficient permissions.', 'bewdley-custom' ) );
+	}
+
+	check_admin_referer( 'bewdley_backfill_contact_tags' );
+
+	$redirect_url = admin_url( 'tools.php?page=bewdley-crm-backfill-tools' );
+	$settings = bewdley_get_settings();
+	$tag_raw  = isset( $settings['fluentcrm_tag_targets'] ) ? (string) $settings['fluentcrm_tag_targets'] : '';
+
+	if ( isset( $_POST['backfill_tag_targets'] ) ) {
+		$posted_tag_raw = sanitize_text_field( wp_unslash( $_POST['backfill_tag_targets'] ) );
+
+		if ( '' !== trim( $posted_tag_raw ) ) {
+			$tag_raw = $posted_tag_raw;
+		}
+
+		if ( isset( $_POST['save_backfill_tag_targets'] ) && 'yes' === sanitize_text_field( wp_unslash( $_POST['save_backfill_tag_targets'] ) ) ) {
+			$settings['fluentcrm_tag_targets'] = $tag_raw;
+			update_option( BEWDLEY_CUSTOM_OPTION_KEY, wp_parse_args( $settings, bewdley_get_default_settings() ) );
+		}
+	}
+
+	$tag_ids = bewdley_resolve_fluentcrm_object_ids( 'tag', $tag_raw, true );
+
+	if ( empty( $tag_ids ) ) {
+		wp_safe_redirect( add_query_arg( 'bewdley_error', 'missing_tags', $redirect_url ) );
+		exit;
+	}
+
+	if ( ! class_exists( '\\FluentCrm\\App\\Models\\Subscriber' ) ) {
+		wp_safe_redirect( add_query_arg( 'bewdley_error', 'missing_fluentcrm', $redirect_url ) );
+		exit;
+	}
+
+	global $wpdb;
+
+	$subscribers_table = $wpdb->prefix . 'fc_subscribers';
+	$pivot_table       = $wpdb->prefix . 'fc_subscriber_pivot';
+	$list_type         = 'FluentCrm\\App\\Models\\Lists';
+	$list_ids          = bewdley_resolve_fluentcrm_object_ids( 'list', isset( $settings['fluentcrm_list_targets'] ) ? (string) $settings['fluentcrm_list_targets'] : '' );
+	$subscriber_ids    = array();
+
+	if ( ! empty( $list_ids ) ) {
+		$list_placeholders = implode( ',', array_fill( 0, count( $list_ids ), '%d' ) );
+		$sql               = "
+			SELECT DISTINCT s.id
+			FROM {$subscribers_table} s
+			INNER JOIN {$pivot_table} p ON p.subscriber_id = s.id
+			WHERE s.status = %s
+			AND p.object_type = %s
+			AND p.object_id IN ({$list_placeholders})
+		";
+
+		$query_args    = array_merge( array( 'subscribed', $list_type ), array_map( 'absint', $list_ids ) );
+		$prepared_sql  = $wpdb->prepare( $sql, $query_args );
+		$subscriber_ids = array_map( 'absint', (array) $wpdb->get_col( $prepared_sql ) );
+	} else {
+		$sql            = "SELECT id FROM {$subscribers_table} WHERE status = %s";
+		$prepared_sql   = $wpdb->prepare( $sql, 'subscribed' );
+		$subscriber_ids = array_map( 'absint', (array) $wpdb->get_col( $prepared_sql ) );
+	}
+
+	$subscriber_ids = array_values( array_unique( array_filter( $subscriber_ids ) ) );
+	$updated_count  = 0;
+
+	if ( ! empty( $subscriber_ids ) ) {
+		$subscriber_class = '\\FluentCrm\\App\\Models\\Subscriber';
+		$chunked_ids      = array_chunk( $subscriber_ids, 100 );
+
+		foreach ( $chunked_ids as $id_chunk ) {
+			$models = $subscriber_class::whereIn( 'id', $id_chunk )->get();
+
+			foreach ( $models as $model ) {
+				if ( method_exists( $model, 'attachTags' ) ) {
+					$model->attachTags( $tag_ids );
+					++$updated_count;
+				}
+			}
+		}
+	}
+
+	wp_safe_redirect( add_query_arg( 'updated_count', $updated_count, $redirect_url ) );
 	exit;
 } );
 
@@ -419,11 +590,12 @@ function bewdley_try_sync_fluentcrm( $payload, $settings ) {
 /**
  * Resolve FluentCRM list/tag targets by ID, title, or slug.
  *
- * @param string $type    Either "list" or "tag".
- * @param string $targets Comma-separated targets.
+ * @param string $type           Either "list" or "tag".
+ * @param string $targets        Comma-separated targets.
+ * @param bool   $create_missing Create missing tags when type is "tag".
  * @return int[]
  */
-function bewdley_resolve_fluentcrm_object_ids( $type, $targets ) {
+function bewdley_resolve_fluentcrm_object_ids( $type, $targets, $create_missing = false ) {
 	$targets = array_filter( array_map( 'trim', explode( ',', (string) $targets ) ) );
 
 	if ( empty( $targets ) ) {
@@ -457,6 +629,20 @@ function bewdley_resolve_fluentcrm_object_ids( $type, $targets ) {
 
 		if ( $model && isset( $model->id ) ) {
 			$ids[] = (int) $model->id;
+			continue;
+		}
+
+		if ( 'tag' === $type && $create_missing && method_exists( $model_class, 'create' ) ) {
+			$created = $model_class::create(
+				array(
+					'title' => $target,
+					'slug'  => $slug,
+				)
+			);
+
+			if ( $created && isset( $created->id ) ) {
+				$ids[] = (int) $created->id;
+			}
 		}
 	}
 
