@@ -4,6 +4,13 @@
 
 Build a staging-first email system for Bewdley Farm Shop that preserves WooCommerce transactional emails, adds newsletter capability, and stays fully reversible and production-safe.
 
+## Progress Snapshot (2026-03-07)
+
+- Completed: custom `bewdley-custom` plugin foundation, sync settings, legacy export tooling, and CRM backfill tooling.
+- Completed: existing FluentCRM contacts backfilled successfully (`645` subscribed contacts processed).
+- Current baseline: list `Customers` populated and tagged cohort established for historical contacts.
+- Next checkpoint: enable ongoing order sync and validate one new order end-to-end (contact upsert + list/tag mapping).
+
 ## Confirmed Assumptions
 
 - Current subscribers came through WooCommerce checkout.
