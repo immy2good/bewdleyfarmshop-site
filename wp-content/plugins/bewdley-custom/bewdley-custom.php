@@ -922,10 +922,7 @@ function bewdley_handle_newsletter_signup() {
 add_shortcode( 'bewdley_signup', function ( $atts ) {
 	$atts = shortcode_atts(
 		array(
-			'heading'  => 'Subscribe to our mailing list',
-			'subtext'  => 'Join our mailing list to hear about farm shop events, seasonal produce and special offers.',
-			'button'   => 'Yes please, sign me up',
-			'image_id' => 0,
+			'button' => 'Yes please, sign me up',
 		),
 		$atts,
 		'bewdley_signup'
@@ -935,7 +932,7 @@ add_shortcode( 'bewdley_signup', function ( $atts ) {
 		'bewdley-signup',
 		plugin_dir_url( __FILE__ ) . 'assets/signup.js',
 		array( 'jquery' ),
-		'1.1.0',
+		'1.2.0',
 		true
 	);
 
@@ -951,80 +948,44 @@ add_shortcode( 'bewdley_signup', function ( $atts ) {
 		)
 	);
 
-	// Image â€” use attachment ID if provided, otherwise fall back to URL search.
-	$image_html = '';
-	$image_id   = absint( $atts['image_id'] );
-	if ( $image_id ) {
-		$image_html = wp_get_attachment_image( $image_id, 'medium', false, array( 'class' => 'bfs-signup__image', 'alt' => '' ) );
-	} else {
-		// Try to find the fruit image by filename.
-		global $wpdb;
-		$attachment = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_name LIKE %s LIMIT 1",
-				'%bewdley-fruit%'
-			)
-		);
-		if ( $attachment ) {
-			$image_html = wp_get_attachment_image( $attachment->ID, 'medium', false, array( 'class' => 'bfs-signup__image', 'alt' => '' ) );
-		}
-	}
-
 	ob_start();
 	?>
 	<style>
-	.bfs-signup{display:flex;align-items:center;gap:2rem;background:var(--bricks-color-primary,#1e3a2b);border-radius:12px;padding:2.5rem 2rem;max-width:900px;margin:0 auto;color:#fff;}
-	.bfs-signup__img{flex:0 0 220px;text-align:center;}
-	.bfs-signup__image{max-width:100%;height:auto;display:block;margin:0 auto;}
-	.bfs-signup__body{flex:1;}
-	.bfs-signup__body h2{font-size:1.6rem;margin:0 0 0.6rem;color:#fff;line-height:1.2;}
-	.bfs-signup__body p{color:rgba(255,255,255,0.8);margin:0 0 1.4rem;font-size:0.95rem;line-height:1.5;}
-	.bfs-signup__form .bfs-field{margin-bottom:0.75rem;}
-	.bfs-signup__form input[type="text"],
-	.bfs-signup__form input[type="email"]{width:100%;padding:0.75rem 1rem;border:none;border-radius:6px;font-size:0.95rem;color:#2c2c2c;background:#fff;box-sizing:border-box;}
-	.bfs-signup__form input[type="text"]::placeholder,
-	.bfs-signup__form input[type="email"]::placeholder{color:#888;}
+	.bfs-signup-form{width:100%;}
+	.bfs-signup-form .bfs-field{margin-bottom:0.75rem;}
+	.bfs-signup-form input[type="text"],
+	.bfs-signup-form input[type="email"]{width:100%;padding:0.75rem 1rem;border:1px solid #d0d0d0;border-radius:6px;font-size:0.95rem;color:#2c2c2c;background:#fff;box-sizing:border-box;}
+	.bfs-signup-form input[type="text"]::placeholder,
+	.bfs-signup-form input[type="email"]::placeholder{color:#aaa;}
+	.bfs-signup-form input[type="text"]:focus,
+	.bfs-signup-form input[type="email"]:focus{outline:none;border-color:#b07d2e;box-shadow:0 0 0 2px rgba(176,125,46,0.15);}
 	.bfs-signup__consent{display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:1rem;}
-	.bfs-signup__consent input[type="checkbox"]{margin-top:3px;flex-shrink:0;width:16px;height:16px;cursor:pointer;}
-	.bfs-signup__consent label{font-size:0.82rem;color:rgba(255,255,255,0.75);line-height:1.4;cursor:pointer;}
-	.bfs-signup__btn{display:inline-flex;align-items:center;gap:0.5rem;background:var(--bricks-color-accent,#e8a020);color:#fff;border:none;border-radius:6px;padding:0.8rem 1.6rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;width:100%;justify-content:center;}
+	.bfs-signup__consent input[type="checkbox"]{margin-top:3px;flex-shrink:0;width:16px;height:16px;cursor:pointer;accent-color:#e8a020;}
+	.bfs-signup__consent label{font-size:0.82rem;color:#555;line-height:1.4;cursor:pointer;}
+	.bfs-signup__btn{display:inline-flex;align-items:center;gap:0.5rem;background:#e8a020;color:#fff;border:none;border-radius:6px;padding:0.85rem 1.6rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;width:100%;justify-content:center;}
 	.bfs-signup__btn:hover{opacity:0.88;}
 	.bfs-signup__btn:disabled{opacity:0.6;cursor:default;}
 	.bfs-signup__msg{margin-top:0.75rem;font-size:0.9rem;min-height:1.2em;}
-	.bfs-signup__msg.success{color:#a5d6a7;}
-	.bfs-signup__msg.error{color:#ef9a9a;}
-	@media(max-width:640px){
-		.bfs-signup{flex-direction:column;text-align:center;}
-		.bfs-signup__img{flex:none;}
-		.bfs-signup__consent{text-align:left;}
-	}
+	.bfs-signup__msg.success{color:#2e7d32;}
+	.bfs-signup__msg.error{color:#c62828;}
 	</style>
-	<div class="bfs-signup">
-		<?php if ( $image_html ) : ?>
-		<div class="bfs-signup__img"><?php echo $image_html; // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
-		<?php endif; ?>
-		<div class="bfs-signup__body">
-			<h2><?php echo esc_html( $atts['heading'] ); ?></h2>
-			<p><?php echo esc_html( $atts['subtext'] ); ?></p>
-			<form class="bfs-signup__form" id="bfs-signup-form" novalidate>
-				<div class="bfs-field">
-					<input type="text" name="name" placeholder="<?php esc_attr_e( 'Your Name *', 'bewdley-custom' ); ?>" required autocomplete="name" />
-				</div>
-				<div class="bfs-field">
-					<input type="email" name="email" placeholder="<?php esc_attr_e( 'Your Email *', 'bewdley-custom' ); ?>" required autocomplete="email" />
-				</div>
-				<div class="bfs-signup__consent">
-					<input type="checkbox" id="bfs-consent" name="consent" value="1" required />
-					<label for="bfs-consent"><?php esc_html_e( 'I agree to receive emails about farm shop news, seasonal updates and special offers. I understand I can unsubscribe at any time.', 'bewdley-custom' ); ?></label>
-				</div>
-				<button type="submit" class="bfs-signup__btn">
-					<i class="fas fa-thumbs-up" aria-hidden="true"></i>
-					<span class="bfs-btn-text"><?php echo esc_html( $atts['button'] ); ?></span>
-				</button>
-			</form>
-			<div class="bfs-signup__msg" id="bfs-signup-msg" role="status" aria-live="polite"></div>
+	<form class="bfs-signup-form" id="bfs-signup-form" novalidate>
+		<div class="bfs-field">
+			<input type="text" name="name" placeholder="<?php esc_attr_e( 'Your Name *', 'bewdley-custom' ); ?>" required autocomplete="name" />
 		</div>
-	</div>
+		<div class="bfs-field">
+			<input type="email" name="email" placeholder="<?php esc_attr_e( 'Your Email *', 'bewdley-custom' ); ?>" required autocomplete="email" />
+		</div>
+		<div class="bfs-signup__consent">
+			<input type="checkbox" id="bfs-consent" name="consent" value="1" required />
+			<label for="bfs-consent"><?php esc_html_e( 'I agree to receive emails about farm shop news, seasonal updates and special offers. I understand I can unsubscribe at any time.', 'bewdley-custom' ); ?></label>
+		</div>
+		<button type="submit" class="bfs-signup__btn">
+			<i class="fas fa-thumbs-up" aria-hidden="true"></i>
+			<span class="bfs-btn-text"><?php echo esc_html( $atts['button'] ); ?></span>
+		</button>
+	</form>
+	<div class="bfs-signup__msg" id="bfs-signup-msg" role="status" aria-live="polite"></div>
 	<?php
 	return ob_get_clean();
 } );
@@ -1052,7 +1013,7 @@ wp_localize_script(
 array(
 'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
 'nonce'      => wp_create_nonce( 'bewdley_newsletter_nonce' ),
-'successMsg' => __( "You're signed up — thank you!", 'bewdley-custom' ),
+'successMsg' => __( "You're signed up ï¿½ thank you!", 'bewdley-custom' ),
 'emailError' => __( 'Please enter a valid email address.', 'bewdley-custom' ),
 )
 );
