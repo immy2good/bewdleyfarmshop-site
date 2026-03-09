@@ -11,6 +11,31 @@ Set up a WordPress-based email system for Bewdley Farm Shop that:
 - routes replies to BTConnect
 - is tested first on staging
 
+## Current Status Snapshot (2026-03-09)
+
+Phase/stage:
+
+- Stage 3 closeout complete; staging mail validation passed
+
+Confirmed complete:
+
+- SES production access granted
+- SES SMTP credentials created and stored securely
+- FluentSMTP configured on staging
+- Gmail and Outlook test sends passed
+- WooCommerce transactional email test passed
+
+Next active phase:
+
+- Phase 7: Signup capture going forward
+- Next task: Task 7.1 - Connect checkout opt-in to FluentCRM
+
+Immediate next actions:
+
+- verify checkout opt-in consent key/value mapping in production flow
+- confirm opted-in orders create/update a single FluentCRM contact
+- confirm non-opted-in orders do not subscribe contacts
+
 ---
 
 # Phase 1: Discovery and audit
@@ -348,6 +373,10 @@ Output:
 
 - clean CSV of consented contacts
 
+Status update (2026-03-09):
+
+- skipped by project decision (historical import not required in current rollout)
+
 ## Task 6.2 - Import into FluentCRM
 
 Goal:
@@ -359,6 +388,10 @@ Actions:
 - assign Newsletter list
 - tag as Woo Checkout Opt-In
 - verify sample records after import
+
+Status update (2026-03-09):
+
+- skipped by project decision (depends on Task 6.1 historical export)
 
 ## Task 6.3 - Avoid duplicate capture
 

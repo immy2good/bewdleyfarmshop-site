@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'BEWDLEY_CUSTOM_OPTION_KEY', 'bewdley_custom_email_settings' );
+define( 'BEWDLEY_CONSENT_META_KEY', '_bewdley_marketing_optin' );
 
 /**
  * Add a read-only audit page to help identify historical newsletter consent keys.
@@ -72,7 +73,7 @@ add_action( 'admin_init', function () {
 function bewdley_get_default_settings() {
 	return array(
 		'enable_order_sync'            => 'no',
-		'consent_meta_key'             => '',
+		'consent_meta_key'             => BEWDLEY_CONSENT_META_KEY,
 		'consent_allowed_values'       => 'yes,1,true,on,checked',
 		'allow_legacy_without_consent' => 'no',
 		'default_source_label'         => 'Woo Checkout',
@@ -80,6 +81,46 @@ function bewdley_get_default_settings() {
 		'fluentcrm_tag_targets'        => '',
 	);
 }
+
+/**
+ * Add a checkout consent checkbox without requiring template edits.
+ *
+ * This relies on standard WooCommerce checkout field rendering, which Bricks
+ * checkout templates typically preserve when using Woo checkout elements.
+ */
+add_filter( 'woocommerce_checkout_fields', function ( $fields ) {
+	if ( ! is_array( $fields ) ) {
+		return $fields;
+	}
+
+	if ( ! isset( $fields['billing'] ) || ! is_array( $fields['billing'] ) ) {
+		$fields['billing'] = array();
+	}
+
+	$fields['billing'][ BEWDLEY_CONSENT_META_KEY ] = array(
+		'type'     => 'checkbox',
+		'label'    => __( 'I would like to receive farm shop news and offers by email.', 'bewdley-custom' ),
+		'required' => false,
+		'class'    => array( 'form-row-wide' ),
+		'priority' => 999,
+	);
+
+	return $fields;
+}, 20 );
+
+/**
+ * Persist checkout consent value to order meta.
+ */
+add_action( 'woocommerce_checkout_create_order', function ( $order, $data ) {
+	if ( ! $order || ! is_object( $order ) || ! method_exists( $order, 'update_meta_data' ) ) {
+		return;
+	}
+
+	$consent_raw = isset( $_POST[ BEWDLEY_CONSENT_META_KEY ] ) ? wp_unslash( $_POST[ BEWDLEY_CONSENT_META_KEY ] ) : '';
+	$consent_on  = '' !== $consent_raw;
+
+	$order->update_meta_data( BEWDLEY_CONSENT_META_KEY, $consent_on ? 'yes' : 'no' );
+}, 20, 2 );
 
 /**
  * Get merged settings.
