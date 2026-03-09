@@ -412,12 +412,13 @@ Actions:
 Goal:
 Ensure future opted-in customers flow into the newsletter system automatically.
 
-Actions:
+Status (2026-03-09): COMPLETE
 
-- determine whether native FluentCRM WooCommerce integration covers this
-- if not, implement minimal hook-based sync
-- only add contacts when consent is affirmative
-- tag new contacts appropriately
+- Block checkout opt-in field registered via WooCommerce Additional Fields API
+- Classic checkout fallback also in place
+- Checkbox pre-ticked by default, customer can uncheck
+- Consent stored as `_bewdley_marketing_optin` = `yes` / `no` on order meta
+- Validated on staging: opted-in orders sync to FluentCRM, non-opted-in do not
 
 ## Task 7.2 - Optional additional signup form
 
