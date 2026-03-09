@@ -1028,3 +1028,66 @@ add_shortcode( 'bewdley_signup', function ( $atts ) {
 	<?php
 	return ob_get_clean();
 } );
+// ---------------------------------------------------------------------------
+// Fixed bottom newsletter bar shortcode [bewdley_bar]
+// ---------------------------------------------------------------------------
+
+/**
+ * Renders a fixed bottom bar that slides up after 3 seconds.
+ * Dismissed state is saved to sessionStorage so it won't reappear mid-session.
+ * Usage: [bewdley_bar]
+ */
+add_shortcode( 'bewdley_bar', function () {
+wp_enqueue_script(
+'bewdley-signup-bar',
+plugin_dir_url( __FILE__ ) . 'assets/signup-bar.js',
+array( 'jquery' ),
+'1.0.0',
+true
+);
+
+wp_localize_script(
+'bewdley-signup-bar',
+'bewdleyBar',
+array(
+'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+'nonce'      => wp_create_nonce( 'bewdley_newsletter_nonce' ),
+'successMsg' => __( "You're signed up — thank you!", 'bewdley-custom' ),
+'emailError' => __( 'Please enter a valid email address.', 'bewdley-custom' ),
+)
+);
+
+ob_start();
+?>
+<style>
+#bfs-bar{position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1e3a2b;color:#fff;padding:0.9rem 3rem 0.9rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:center;box-shadow:0 -2px 12px rgba(0,0,0,0.25);transform:translateY(100%);transition:transform 0.4s ease;}
+#bfs-bar.bfs-bar--visible{transform:translateY(0);}
+#bfs-bar p{margin:0;font-size:0.9rem;color:rgba(255,255,255,0.85);white-space:nowrap;}
+#bfs-bar-form{display:flex;gap:0.5rem;align-items:center;}
+#bfs-bar-form input[type="email"]{padding:0.55rem 0.9rem;border:none;border-radius:5px;font-size:0.9rem;color:#2c2c2c;width:220px;}
+#bfs-bar-form button{padding:0.55rem 1.2rem;background:#e8a020;color:#fff;border:none;border-radius:5px;font-size:0.9rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;white-space:nowrap;}
+#bfs-bar-form button:hover{opacity:0.85;}
+#bfs-bar-form button:disabled{opacity:0.6;cursor:default;}
+#bfs-bar-msg{font-size:0.85rem;flex-basis:100%;text-align:center;min-height:1em;}
+#bfs-bar-msg.success{color:#a5d6a7;}
+#bfs-bar-msg.error{color:#ef9a9a;}
+#bfs-bar-close{position:absolute;top:50%;right:1rem;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,0.6);font-size:1.3rem;line-height:1;cursor:pointer;padding:0.3rem;}
+#bfs-bar-close:hover{color:#fff;}
+@media(max-width:540px){
+#bfs-bar{flex-direction:column;text-align:center;padding:1rem 2.5rem 1rem 1rem;}
+#bfs-bar-form{flex-direction:column;width:100%;}
+#bfs-bar-form input[type="email"],#bfs-bar-form button{width:100%;}
+}
+</style>
+<div id="bfs-bar" role="complementary" aria-label="<?php esc_attr_e( 'Newsletter signup', 'bewdley-custom' ); ?>">
+<p><?php esc_html_e( 'Get farm shop news &amp; offers:', 'bewdley-custom' ); ?></p>
+<form id="bfs-bar-form" novalidate>
+<input type="email" name="email" placeholder="<?php esc_attr_e( 'Your email address', 'bewdley-custom' ); ?>" required autocomplete="email" />
+<button type="submit"><?php esc_html_e( 'Subscribe', 'bewdley-custom' ); ?></button>
+</form>
+<div id="bfs-bar-msg" role="status" aria-live="polite"></div>
+<button id="bfs-bar-close" aria-label="<?php esc_attr_e( 'Dismiss', 'bewdley-custom' ); ?>">&#x2715;</button>
+</div>
+<?php
+return ob_get_clean();
+} );
