@@ -961,7 +961,7 @@ add_shortcode( 'bewdley_signup', function ( $atts ) {
 	.bfs-signup-form input[type="email"]:focus{outline:none;border-color:#b07d2e;box-shadow:0 0 0 2px rgba(176,125,46,0.15);}
 	.bfs-signup__consent{display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:1rem;}
 	.bfs-signup__consent input[type="checkbox"]{margin-top:3px;flex-shrink:0;width:16px;height:16px;cursor:pointer;accent-color:#e8a020;}
-	.bfs-signup__consent label{font-size:0.82rem;color:#555;line-height:1.4;cursor:pointer;}
+	.bfs-signup__consent label{font-size:0.82rem;color:inherit;opacity:0.85;line-height:1.4;cursor:pointer;}
 	.bfs-signup__btn{display:inline-flex;align-items:center;gap:0.5rem;background:#e8a020;color:#fff;border:none;border-radius:6px;padding:0.85rem 1.6rem;font-size:0.95rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;width:100%;justify-content:center;}
 	.bfs-signup__btn:hover{opacity:0.88;}
 	.bfs-signup__btn:disabled{opacity:0.6;cursor:default;}
