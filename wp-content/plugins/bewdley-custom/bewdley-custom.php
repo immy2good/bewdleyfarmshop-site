@@ -83,10 +83,43 @@ function bewdley_get_default_settings() {
 }
 
 /**
- * Add a checkout consent checkbox without requiring template edits.
- *
- * This relies on standard WooCommerce checkout field rendering, which Bricks
- * checkout templates typically preserve when using Woo checkout elements.
+ * Block checkout: register marketing opt-in using WooCommerce Additional Fields API.
+ * Requires WooCommerce 8.9+. Adds checkbox to the Contact information section.
+ */
+add_action( 'woocommerce_init', function () {
+	if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
+		return;
+	}
+
+	woocommerce_register_additional_checkout_field(
+		array(
+			'id'       => 'bewdley-custom/marketing-optin',
+			'label'    => __( 'I would like to receive farm shop news and offers by email.', 'bewdley-custom' ),
+			'location' => 'contact',
+			'type'     => 'checkbox',
+			'required' => false,
+			'default'  => true,
+		)
+	);
+} );
+
+/**
+ * Block checkout: copy the additional field value to our standard consent meta key.
+ */
+add_action( 'woocommerce_store_api_checkout_order_processed', function ( $order ) {
+	if ( ! $order || ! method_exists( $order, 'get_meta' ) ) {
+		return;
+	}
+
+	$value      = $order->get_meta( 'bewdley-custom/marketing-optin' );
+	$consent_on = ( true === $value || '1' === (string) $value || 1 === $value );
+
+	$order->update_meta_data( BEWDLEY_CONSENT_META_KEY, $consent_on ? 'yes' : 'no' );
+	$order->save_meta_data();
+}, 20 );
+
+/**
+ * Classic checkout: add consent checkbox via fields filter (fallback for non-block checkout).
  */
 add_filter( 'woocommerce_checkout_fields', function ( $fields ) {
 	if ( ! is_array( $fields ) ) {
@@ -103,13 +136,14 @@ add_filter( 'woocommerce_checkout_fields', function ( $fields ) {
 		'required' => false,
 		'class'    => array( 'form-row-wide' ),
 		'priority' => 999,
+		'default'  => 1,
 	);
 
 	return $fields;
 }, 20 );
 
 /**
- * Persist checkout consent value to order meta.
+ * Classic checkout: persist consent value to order meta.
  */
 add_action( 'woocommerce_checkout_create_order', function ( $order, $data ) {
 	if ( ! $order || ! is_object( $order ) || ! method_exists( $order, 'update_meta_data' ) ) {
