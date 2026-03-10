@@ -874,7 +874,7 @@ function bewdley_handle_newsletter_signup() {
 
 	$settings = bewdley_get_settings();
 	$list_ids = bewdley_resolve_fluentcrm_object_ids( 'list', isset( $settings['fluentcrm_list_targets'] ) ? (string) $settings['fluentcrm_list_targets'] : '' );
-	$tag_ids  = bewdley_resolve_fluentcrm_object_ids( 'tag', isset( $settings['fluentcrm_tag_targets'] ) ? (string) $settings['fluentcrm_tag_targets'] : '', true );
+	$tag_ids  = bewdley_resolve_fluentcrm_object_ids( 'tag', 'subscribe_button', true );
 
 	// Split full name into first/last.
 	$name_parts = array_filter( explode( ' ', $name, 2 ) );
