@@ -20,6 +20,30 @@ Frontend scripts:
 - `assets/signup.js`
 - `assets/signup-bar.js`
 
+## Quick Start (Developer Runbook)
+
+Use this when onboarding or validating a fresh environment.
+
+1. Confirm required plugins are active: WooCommerce and FluentCRM.
+2. Open Tools -> Email Sync Settings and verify consent key/settings values.
+3. Confirm `enable_order_sync` is set correctly for the current environment.
+4. Place two test orders (one opted-in, one not opted-in).
+5. Verify order meta writes `_bewdley_marketing_optin` as `yes` or `no`.
+6. Submit `[bewdley_signup]` with both a new and existing email.
+7. Confirm FluentCRM contact updates and `subscribe_button` tag behavior.
+8. Run the verification checklist in this document before release.
+
+## Compatibility Matrix
+
+This plugin is currently intended/tested in the Bewdley stack:
+
+- WordPress: 6.9.x
+- WooCommerce: active and current project standard
+- FluentCRM: active and required for contact/list/tag operations
+- PHP: 8.2.x
+
+If platform/plugin versions change significantly, re-run the full checklist and staging validation before production rollout.
+
 ## Key Constants
 
 - `BEWDLEY_CUSTOM_OPTION_KEY`: stores plugin settings in `wp_options`.
@@ -215,6 +239,64 @@ Use this action to:
 - Keep list/tag targets configurable via settings; avoid hardcoding IDs in custom edits.
 - Exception: `[bewdley_signup]` intentionally uses the fixed `subscribe_button` tag to separate button/form signups from checkout-origin tags.
 - Existing logic uses best-effort guards (class/function checks) to fail safely when dependencies are unavailable.
+
+## Data Governance Notes
+
+- Consent-first policy: do not market to contacts without explicit consent.
+- Checkout-origin contacts and shortcode/form-origin contacts are intentionally separated by tagging strategy.
+- `[bewdley_signup]` uses `source = Newsletter Signup Form` and always targets `subscribe_button`.
+- Checkout sync behavior is controlled by consent settings and order lifecycle hooks.
+
+## Troubleshooting
+
+### Symptom: `[bewdley_signup]` submits but tag is missing
+
+Checks:
+
+- Verify FluentCRM is active.
+- Verify AJAX request is successful (HTTP 200 and success JSON).
+- Confirm tag `subscribe_button` exists or can be created.
+- Re-test using one new and one existing contact email.
+
+### Symptom: contact is created but list assignment is wrong
+
+Checks:
+
+- Review `fluentcrm_list_targets` in Email Sync Settings.
+- Confirm list names/slugs/IDs are valid in FluentCRM.
+
+### Symptom: order sync does not run
+
+Checks:
+
+- Confirm `enable_order_sync = yes`.
+- Confirm order reaches `processing` or `completed` status.
+- Verify consent key/value mapping in order meta matches allowed values.
+
+### Symptom: shortcode UI works but no contact update
+
+Checks:
+
+- Validate nonce and `admin-ajax.php` availability.
+- Check PHP logs and WooCommerce logs for warnings from source `bewdley-custom`.
+
+## Rollback Notes
+
+Use minimal rollback steps in this order:
+
+1. Disable order sync from Email Sync Settings (`enable_order_sync = no`) if behavior is uncertain.
+2. Revert plugin code commit on development branch, test, then promote.
+3. Keep FluentCRM data intact; avoid destructive contact/tag cleanup unless explicitly required.
+4. Re-run staging verification before any live rollout after rollback.
+
+## Change History
+
+### 2026-03-10
+
+- Restored plugin README into active development branch from `main` baseline.
+- Documented fixed shortcode tagging rule for `[bewdley_signup]`.
+- Updated signup flow implementation notes to reflect FluentCRM `updateOrCreate()` usage for new and existing contacts.
+- Clarified that `[bewdley_signup]` always applies `subscribe_button`.
 
 ## Known Technical Debt / Cleanup Candidates
 
