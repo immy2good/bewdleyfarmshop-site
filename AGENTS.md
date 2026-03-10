@@ -17,6 +17,34 @@ This is a WordPress ecommerce website for a local UK farm shop.
 - DNS provider: Fasthosts
 - Workflow: Git + VS Code + Bricks visual builder
 
+## Branch Strategy And Environment Sync
+
+Current branch policy (agreed 2026-03-10):
+
+- `main` is the live/production branch
+- `dev` is the active development branch
+
+Important Local/Flywheel note:
+
+- Local "Pull" syncs files + database from the selected Flywheel environment and is not Git-aware
+- the checked out Git branch only determines where those file changes are recorded
+
+Interim safe workflow for staging sync:
+
+- do not pull staging directly into `dev` when `dev` has unmerged local work
+- create a temporary sync branch from `dev` (for example `sync/staging-YYYY-MM-DD`)
+- run Local pull on that sync branch
+- commit pulled changes on the sync branch
+- merge/reconcile with `dev`, test, then merge back to `dev`
+
+Open decision required:
+
+- define one permanent branch policy for staging-related work, either:
+- option A: keep using temporary `sync/staging-*` branches
+- option B: introduce a dedicated long-lived `staging` branch
+
+Until this decision is finalized, use option A.
+
 ## Current Objective
 
 Implement a reliable, scalable email system that supports:

@@ -11,6 +11,23 @@ Set up a WordPress-based email system for Bewdley Farm Shop that:
 - routes replies to BTConnect
 - is tested first on staging
 
+## Branching And Deployment Workflow Decisions (2026-03-10)
+
+Confirmed:
+
+- `main` is the live/production branch
+- `dev` is the development branch
+
+Pending decision:
+
+- choose a permanent branch strategy for staging sync and staging-bound work
+
+Interim rule (active now):
+
+- when pulling from Flywheel staging via Local, use a temporary sync branch created from `dev`
+- example naming: `sync/staging-YYYY-MM-DD`
+- do conflict resolution and validation on the sync branch before merging back into `dev`
+
 ## Current Status Snapshot (2026-03-09)
 
 Phase/stage:
