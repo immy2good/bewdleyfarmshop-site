@@ -165,7 +165,9 @@ Creates/updates contact:
 - source `Newsletter Signup Form`
 - status `subscribed`
 - optional first/last name
-- attaches configured lists/tags
+- uses FluentCRM `updateOrCreate()` for consistent handling of both new and existing contacts
+- attaches configured list targets
+- always attaches the `subscribe_button` tag (created if missing)
 
 Shortcodes:
 
@@ -182,6 +184,7 @@ The plugin currently reflects the completed signup/sync implementation:
 4. Added guarded order lifecycle sync to FluentCRM, controlled by settings.
 5. Added admin tooling for audit/export/backfill for safe historical handling.
 6. Added frontend newsletter signup interfaces with AJAX submission.
+7. Updated `[bewdley_signup]` contact handling to ensure `subscribe_button` is applied to existing contacts as well as new contacts.
 
 ## Dependencies and Expectations
 
@@ -210,6 +213,7 @@ Use this action to:
 
 - Keep consent handling conservative: never subscribe without explicit consent unless legacy mode is intentionally enabled.
 - Keep list/tag targets configurable via settings; avoid hardcoding IDs in custom edits.
+- Exception: `[bewdley_signup]` intentionally uses the fixed `subscribe_button` tag to separate button/form signups from checkout-origin tags.
 - Existing logic uses best-effort guards (class/function checks) to fail safely when dependencies are unavailable.
 
 ## Known Technical Debt / Cleanup Candidates
