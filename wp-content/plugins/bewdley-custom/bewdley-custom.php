@@ -894,22 +894,16 @@ function bewdley_handle_newsletter_signup() {
 		$contact_data['last_name'] = $last_name;
 	}
 
-	$contact = $subscriber_class::where( 'email', $email )->first();
-
-	if ( $contact ) {
-		$contact->fill( $contact_data );
-		$contact->save();
-	} else {
-		$contact = $subscriber_class::create( $contact_data );
+	if ( ! empty( $list_ids ) ) {
+		$contact_data['lists'] = $list_ids;
 	}
 
-	if ( $contact && ! empty( $list_ids ) && method_exists( $contact, 'attachLists' ) ) {
-		$contact->attachLists( $list_ids );
+	if ( ! empty( $tag_ids ) ) {
+		$contact_data['tags'] = $tag_ids;
 	}
 
-	if ( $contact && ! empty( $tag_ids ) && method_exists( $contact, 'attachTags' ) ) {
-		$contact->attachTags( $tag_ids );
-	}
+	$subscriber_instance = new $subscriber_class();
+	$contact             = $subscriber_instance->updateOrCreate( $contact_data );
 
 	wp_send_json_success( array( 'message' => __( 'You\'re signed up — thank you! Look out for news from the farm shop.', 'bewdley-custom' ) ) );
 }
