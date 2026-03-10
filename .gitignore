@@ -20,6 +20,11 @@
 /wp-content/upgrade/
 /wp-content/backups*/
 /wp-content/updraft/
+/wp-content/ai1wm-backups/
+
+# Ignore Local Connect/Flywheel transfer artifacts
+/.connect-manifest.json
+/.connect-push.sql
 
 # Ignore local environment files
 wp-config.php
