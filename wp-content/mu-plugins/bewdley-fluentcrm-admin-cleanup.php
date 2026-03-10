@@ -217,62 +217,15 @@ add_action('admin_head', function () {
     }
 
     echo '<style id="bewdley-fluentcrm-admin-cleanup">';
-    echo '.fluentcrm_header .fluentcrm-actions,.fluentcrm-header .fluentcrm-actions{float:left !important;clear:none !important;margin-left:0 !important;margin-right:auto !important;}';
-    echo '.fluentcrm-navigation{float:left !important;margin-left:0 !important;margin-right:auto !important;text-align:left !important;}';
-    echo '.fluentcrm-navigation .el-menu.el-menu--horizontal{display:flex !important;justify-content:flex-start !important;float:left !important;margin-left:0 !important;margin-right:auto !important;}';
-    echo '.fluentcrm-navigation .el-menu--horizontal>.el-menu-item,.fluentcrm-navigation .el-menu--horizontal>.el-submenu{float:left !important;}';
-    echo '.fluentcrm-navigation .el-menu-item:last-child{float:left !important;}';
     echo '.fluentcrm_main_menu_items,.fc_menu_items{display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm_header .fluentcrm-actions,#fluentcrm_app .fluentcrm-header .fluentcrm-actions{float:left !important;clear:none !important;margin-left:0 !important;margin-right:auto !important;}';
-    echo '#fluentcrm_app .fluentcrm-navigation{justify-content:flex-start !important;}';
-    echo '#fluentcrm_app .fluentcrm-navigation{float:left !important;margin-left:0 !important;margin-right:auto !important;text-align:left !important;}';
-    echo '#fluentcrm_app .el-menu.el-menu--horizontal{display:flex !important;justify-content:flex-start !important;float:left !important;margin-left:0 !important;margin-right:auto !important;}';
-    echo '#fluentcrm_app .el-menu--horizontal>.el-menu-item{float:left !important;}';
-    echo '#fluentcrm_app .fluentcrm-navigation .el-menu-item:last-child{float:left !important;}';
-    echo '#fluentcrm_app .fluentcrm-navigation .el-submenu{float:left !important;}';
-    echo '.el-menu--popup{max-width:calc(100vw - 16px) !important;}';
-    echo '.el-menu--popup-bottom-start,.el-menu--popup-bottom-end,.el-menu--popup-right-start{margin-left:0 !important;margin-right:0 !important;}';
     echo '.fc_quick_links,.fc_quick_links_wrap,ul.fc_quick_links{display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm-navigation .el-menu-item:first-of-type{padding-left:20px !important;}';
+    echo '.fluentcrm_admin_dashboard .fc_request_review_widget{display:none !important;}';
+    echo '.fluentcrm_admin_dashboard .fc_m_20.fc_request_review_widget{display:none !important;}';
+    echo '.fluentcrm_admin_dashboard .fc_m_20.fc_request_review_widget.fc_quick_links{display:none !important;}';
     echo '#fluentcrm_app .fluentcrm_admin_dashboard > .el-row > .el-col.el-col-24.el-col-sm-24.el-col-md-8.el-col-lg-6{display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm_admin_dashboard .fc_request_review_widget{display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm_admin_dashboard .fc_m_20.fc_request_review_widget{display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm_admin_dashboard .fc_m_20.fc_request_review_widget.fc_quick_links{display:none !important;}';
-    echo '#fluentcrm_app a.pro_link,#fluentcrm_app .fc_key_get_pro,[href*="utm_campaign=pro"],[href*="/add-ons"]{display:none !important;}';
+    echo 'a.pro_link,.fc_key_get_pro,[href*="utm_campaign=pro"],[href*="/add-ons"]{display:none !important;}';
     echo '</style>';
 });
-
-/**
- * Inject a second, late CSS pass (similar to white-label plugins) so re-rendered UI stays hidden.
- */
-add_action('in_admin_header', function () {
-    if (!bewdley_fcrm_is_shop_manager_user() || !bewdley_fcrm_is_fluentcrm_admin_page()) {
-        return;
-    }
-
-    echo '<style id="bewdley-fluentcrm-admin-cleanup-late">';
-    echo '.fluentcrm_header .fluentcrm-actions,.fluentcrm-header .fluentcrm-actions{float:left !important;clear:none !important;margin-left:0 !important;margin-right:auto !important;}';
-    echo '.fluentcrm-navigation{float:left !important;margin-left:0 !important;margin-right:auto !important;text-align:left !important;}';
-    echo '.fluentcrm-navigation .el-menu.el-menu--horizontal{display:flex !important;justify-content:flex-start !important;float:left !important;margin-left:0 !important;margin-right:auto !important;}';
-    echo '.fluentcrm-navigation .el-menu--horizontal>.el-menu-item,.fluentcrm-navigation .el-menu--horizontal>.el-submenu{float:left !important;}';
-    echo '.fluentcrm-navigation .el-menu-item:last-child{float:left !important;}';
-    echo '.fluentcrm_main_menu_items,.fc_menu_items{display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm_header .fluentcrm-actions,#fluentcrm_app .fluentcrm-header .fluentcrm-actions{float:left !important;clear:none !important;margin-left:0 !important;margin-right:auto !important;}';
-    echo '#fluentcrm_app .fluentcrm-navigation{justify-content:flex-start !important;}';
-    echo '#fluentcrm_app .fluentcrm-navigation{float:left !important;margin-left:0 !important;margin-right:auto !important;text-align:left !important;}';
-    echo '#fluentcrm_app .el-menu.el-menu--horizontal{display:flex !important;justify-content:flex-start !important;float:left !important;margin-left:0 !important;margin-right:auto !important;}';
-    echo '#fluentcrm_app .el-menu--horizontal>.el-menu-item{float:left !important;}';
-    echo '#fluentcrm_app .fluentcrm-navigation .el-menu-item:last-child{float:left !important;}';
-    echo '#fluentcrm_app .fluentcrm-navigation .el-submenu{float:left !important;}';
-    echo '.el-menu--popup{max-width:calc(100vw - 16px) !important;}';
-    echo '.el-menu--popup-bottom-start,.el-menu--popup-bottom-end,.el-menu--popup-right-start{margin-left:0 !important;margin-right:0 !important;}';
-    echo '.fc_quick_links,.fc_quick_links_wrap,ul.fc_quick_links{display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm_admin_dashboard .el-col-md-8.el-col-lg-6 .fc_m_20.fc_quick_links:not(:first-child){display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm_admin_dashboard .el-col-md-8.el-col-lg-6 .fc_request_review_widget{display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm_admin_dashboard .el-col.el-col-24.el-col-sm-24.el-col-md-8.el-col-lg-6 .fc_m_20.fc_quick_links:not(:first-child){display:none !important;}';
-    echo '#fluentcrm_app .fluentcrm_admin_dashboard .el-col.el-col-24.el-col-sm-24.el-col-md-8.el-col-lg-6 .fc_request_review_widget{display:none !important;}';
-    echo '</style>';
-}, 99999);
 
 add_action('admin_footer', function () {
     if (!bewdley_fcrm_is_shop_manager_user() || !bewdley_fcrm_is_fluentcrm_admin_page()) {
@@ -282,110 +235,6 @@ add_action('admin_footer', function () {
     ?>
     <script id="bewdley-fluentcrm-admin-cleanup-js">
         (function () {
-            function enforceNavLeft() {
-                function imp(node, prop, value) {
-                    if (!node || !node.style) {
-                        return;
-                    }
-                    node.style.setProperty(prop, value, 'important');
-                }
-
-                var wrappers = document.querySelectorAll('.fluentcrm_header .fluentcrm-actions, .fluentcrm-header .fluentcrm-actions, .fluentcrm-navigation, #fluentcrm_app .fluentcrm_header .fluentcrm-actions, #fluentcrm_app .fluentcrm-header .fluentcrm-actions, #fluentcrm_app .fluentcrm-navigation');
-                wrappers.forEach(function (node) {
-                    imp(node, 'float', 'left');
-                    imp(node, 'clear', 'none');
-                    imp(node, 'margin-left', '0');
-                    imp(node, 'margin-right', 'auto');
-                    imp(node, 'text-align', 'left');
-                });
-
-                // Force header structure so nav/actions render first (left side).
-                var headers = document.querySelectorAll('.fluentcrm_header, .fluentcrm-header');
-                headers.forEach(function (header) {
-                    var actions = header.querySelector('.fluentcrm-actions');
-                    var title = header.querySelector('.fluentcrm_header_title');
-                    if (actions && title && actions !== header.firstElementChild) {
-                        header.insertBefore(actions, header.firstElementChild);
-                    }
-                });
-
-                var menus = document.querySelectorAll('.el-menu.el-menu--horizontal, .fluentcrm-navigation .el-menu, #fluentcrm_app .fluentcrm-navigation .el-menu');
-                menus.forEach(function (menu) {
-                    if (!menu.closest('.fluentcrm-navigation, .fluentcrm_header, .fluentcrm-header, #fluentcrm_app')) {
-                        return;
-                    }
-
-                    imp(menu, 'display', 'flex');
-                    imp(menu, 'justify-content', 'flex-start');
-                    imp(menu, 'float', 'left');
-                    imp(menu, 'margin-left', '0');
-                    imp(menu, 'margin-right', 'auto');
-                    imp(menu, 'text-align', 'left');
-
-                    // Walk up a few levels and neutralize containers that push content right.
-                    var parent = menu.parentElement;
-                    var level = 0;
-                    while (parent && level < 5) {
-                        imp(parent, 'justify-content', 'flex-start');
-                        imp(parent, 'float', 'left');
-                        imp(parent, 'margin-left', '0');
-                        imp(parent, 'margin-right', 'auto');
-                        imp(parent, 'text-align', 'left');
-                        parent = parent.parentElement;
-                        level++;
-                    }
-                });
-
-                var items = document.querySelectorAll('.fluentcrm-navigation .el-menu--horizontal > .el-menu-item, .fluentcrm-navigation .el-menu--horizontal > .el-submenu, #fluentcrm_app .fluentcrm-navigation .el-menu--horizontal > .el-menu-item, #fluentcrm_app .fluentcrm-navigation .el-menu--horizontal > .el-submenu');
-                items.forEach(function (item) {
-                    imp(item, 'float', 'left');
-                });
-
-                var allItems = document.querySelectorAll('.el-menu--horizontal > .el-menu-item, .el-menu--horizontal > .el-submenu');
-                allItems.forEach(function (item) {
-                    if (!item.closest('.fluentcrm-navigation, .fluentcrm_header, .fluentcrm-header, #fluentcrm_app')) {
-                        return;
-                    }
-                    imp(item, 'float', 'left');
-                });
-            }
-
-            function fitDropdownsInViewport() {
-                var viewportPadding = 8;
-                var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
-
-                var popups = document.querySelectorAll('.el-menu--popup, .el-popper[x-placement^="bottom"], .el-popper[x-placement^="right"]');
-                popups.forEach(function (popup) {
-                    if (!popup || !popup.getBoundingClientRect) {
-                        return;
-                    }
-
-                    var rect = popup.getBoundingClientRect();
-                    if (!rect.width || !rect.height) {
-                        return;
-                    }
-
-                    var left = parseFloat(popup.style.left || '0');
-                    if (isNaN(left)) {
-                        return;
-                    }
-
-                    var overflowRight = rect.right - (viewportWidth - viewportPadding);
-                    if (overflowRight > 0) {
-                        popup.style.setProperty('left', (left - overflowRight) + 'px', 'important');
-                        rect = popup.getBoundingClientRect();
-                    }
-
-                    var overflowLeft = viewportPadding - rect.left;
-                    if (overflowLeft > 0) {
-                        var correctedLeft = parseFloat(popup.style.left || '0');
-                        if (!isNaN(correctedLeft)) {
-                            popup.style.setProperty('left', (correctedLeft + overflowLeft) + 'px', 'important');
-                        }
-                    }
-                });
-            }
-
             function hideBlockedLinks() {
                 var appMenus = document.querySelectorAll('.fluentcrm_main_menu_items, .fc_menu_items');
                 appMenus.forEach(function (menu) {
@@ -445,11 +294,9 @@ add_action('admin_footer', function () {
             }
 
             function hidePromoCards() {
-                enforceNavLeft();
-                fitDropdownsInViewport();
                 hideBlockedLinks();
 
-                var root = document.querySelector('#fluentcrm_app .fluentcrm_admin_dashboard');
+                var root = document.querySelector('#fluentcrm_app .fluentcrm_admin_dashboard') || document.querySelector('.fluentcrm_admin_dashboard');
                 if (!root) {
                     return;
                 }
@@ -540,7 +387,6 @@ add_action('admin_footer', function () {
             var safetyRuns = 0;
             var safetyTimer = setInterval(function () {
                 hidePromoCards();
-                fitDropdownsInViewport();
                 hideBlockedLinks();
                 safetyRuns++;
                 if (safetyRuns > 60) {
@@ -548,16 +394,12 @@ add_action('admin_footer', function () {
                 }
             }, 500);
 
-            document.addEventListener('mouseover', fitDropdownsInViewport, true);
             document.addEventListener('mouseover', hideBlockedLinks, true);
-            window.addEventListener('resize', fitDropdownsInViewport);
             window.addEventListener('resize', hideBlockedLinks);
 
             // FluentCRM refreshes dashboard data periodically; run again after load.
             setTimeout(hidePromoCards, 1200);
             setTimeout(hidePromoCards, 3000);
-            setTimeout(fitDropdownsInViewport, 1200);
-            setTimeout(fitDropdownsInViewport, 3000);
             setTimeout(hideBlockedLinks, 1200);
             setTimeout(hideBlockedLinks, 3000);
         })();
